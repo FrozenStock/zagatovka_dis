@@ -7,7 +7,7 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import ProfileSetupForm from "./ProfileSetupForm";
 
-// Определяем типы для форм
+// Определяем корректные типы для каждой формы
 interface LoginFormValues {
   email: string;
   password: string;
@@ -19,8 +19,9 @@ interface RegisterFormValues {
   confirmPassword: string;
 }
 
-interface ProfileSetupFormValues {
-  username: string;
+// Исправленный тип для профиля
+interface ProfileFormData {
+  fullName: string;
   bio?: string;
 }
 
@@ -44,7 +45,6 @@ const AuthModal = ({
 
   const handleLoginSubmit = (data: LoginFormValues) => {
     console.log("Login submitted:", data);
-    // Здесь можно добавить логику аутентификации
   };
 
   const handleRegisterSubmit = (data: RegisterFormValues) => {
@@ -53,14 +53,14 @@ const AuthModal = ({
     setActiveTab("profile");
   };
 
-  const handleProfileSubmit = (data: ProfileSetupFormValues) => {
+  // Исправленный обработчик с правильным типом
+  const handleProfileSubmit = (data: ProfileFormData) => {
     console.log("Profile setup submitted:", data);
     onOpenChange?.(false);
   };
 
   const handleForgotPassword = () => {
     console.log("Forgot password clicked");
-    // Здесь можно добавить логику восстановления пароля
   };
 
   return (
