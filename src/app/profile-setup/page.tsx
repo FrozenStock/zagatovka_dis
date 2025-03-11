@@ -1,112 +1,54 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import ProfileSetupForm from "@/components/auth/ProfileSetupForm";
 import { createClient } from "@/lib/supabase/client";
+import { ProfileData } from "@/types/auth";
+import ProfileSetupForm from "@/components/auth/ProfileSetupForm";
 
 export default function ProfileSetupPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const supabase = createClient();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createClient();
-      const { data } = await supabase.auth.getSession();
-
-      if (!data.session) {
-        router.push("/login");
-        return;
-      }
-
-      setUserId(data.session.user.id);
-    };
-
-    checkAuth();
-  }, []);
-
-  const handleProfileSetup = async (data: {
-    artistName: string;
-    bio: string;
-    profileImage: File | null;
-    genre: string;
-    socialLinks: {
-      spotify: string;
-      instagram: string;
-      twitter: string;
-    };
-  }) => {
-    if (!userId) return;
-
+  const handleProfileSetup = async (data: ProfileData) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const supabase = createClient();
+      const user = (await supabase.auth.getUser()).data.user;
+      if (!user) throw new Error("Не авторизован");
 
       // Upload profile image if provided
       let profileImageUrl = null;
       if (data.profileImage) {
-        const fileExt = data.profileImage.name.split(".").pop();
-        const fileName = `${userId}-${Date.now()}.${fileExt}`;
-
-        const { error: uploadError, data: uploadData } = await supabase.storage
-          .from("profile-images")
-          .upload(fileName, data.profileImage);
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('profile-images')
+          .upload(`${user.id}/${data.profileImage.name}`, data.profileImage);
 
         if (uploadError) throw uploadError;
-
-        if (uploadData) {
-          const { data: urlData } = supabase.storage
-            .from("profile-images")
-            .getPublicUrl(fileName);
-
-          profileImageUrl = urlData.publicUrl;
-        }
+        profileImageUrl = uploadData.path;
       }
 
-      // Update profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
+      // Update profile in database
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
           artist_name: data.artistName,
           bio: data.bio,
-          genre: data.genre,
           profile_image_url: profileImageUrl,
+          genre: data.genre,
+          social_links: data.socialLinks,
           updated_at: new Date().toISOString(),
-        })
-        .eq("id", userId);
+        });
 
-      if (profileError) throw profileError;
+      if (updateError) throw updateError;
 
-      // Add social links
-      const socialLinks = [
-        { platform: "spotify", url: data.socialLinks.spotify },
-        { platform: "instagram", url: data.socialLinks.instagram },
-        { platform: "twitter", url: data.socialLinks.twitter },
-      ].filter((link) => link.url);
-
-      if (socialLinks.length > 0) {
-        const { error: linksError } = await supabase
-          .from("social_links")
-          .insert(
-            socialLinks.map((link) => ({
-              profile_id: userId,
-              platform: link.platform,
-              url: link.url,
-            })),
-          );
-
-        if (linksError) throw linksError;
-      }
-
-      // Redirect to dashboard
-      router.push("/dashboard");
+      router.push('/dashboard');
     } catch (error: any) {
-      console.error("Profile setup error:", error);
-      setError(error.message || "Failed to set up profile");
+      setError(error.message || "Ошибка при сохранении профиля");
     } finally {
       setIsLoading(false);
     }
@@ -114,9 +56,16 @@ export default function ProfileSetupPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Настройка профиля</h1>
+          <p className="text-muted-foreground mt-2">
+            Заполните информацию о себе
+          </p>
+        </div>
+
         {error && (
-          <div className="mb-4 p-3 bg-destructive/15 border border-destructive text-destructive rounded-md text-sm">
+          <div className="p-3 bg-destructive/15 border border-destructive text-destructive rounded-md">
             {error}
           </div>
         )}

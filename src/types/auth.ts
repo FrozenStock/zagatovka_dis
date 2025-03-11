@@ -13,8 +13,16 @@ export interface RegisterData {
   acceptTerms: boolean;
 }
 
+export interface SocialLinks {
+  spotify: string;
+  instagram: string;
+  twitter: string;
+}
+
 export interface ProfileData {
-  username: string;
-  fullName: string;
-  bio?: string;
+  artistName: string;
+  bio: string;
+  profileImage: File | null;
+  genre: string;
+  socialLinks: SocialLinks;
 }

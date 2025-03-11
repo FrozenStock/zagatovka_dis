@@ -1,244 +1,169 @@
-import React, { useState } from "react";
-import { Upload, Music, Link as LinkIcon } from "lucide-react";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ProfileData } from '@/types/auth';
+import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { ProfileData } from "@/types/auth";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+
+const profileSchema = z.object({
+  artistName: z.string().min(2, 'Минимальная длина имени 2 символа'),
+  bio: z.string().max(500, 'Максимальная длина био 500 символов'),
+  profileImage: z.any().nullable(),
+  genre: z.string().min(1, 'Выберите жанр'),
+  socialLinks: z.object({
+    spotify: z.string().url('Введите корректный URL').or(z.string().length(0)),
+    instagram: z.string().url('Введите корректный URL').or(z.string().length(0)),
+    twitter: z.string().url('Введите корректный URL').or(z.string().length(0)),
+  }),
+});
 
 interface ProfileSetupFormProps {
   onSubmit: (data: ProfileData) => Promise<void>;
   isLoading?: boolean;
 }
 
-interface ProfileFormData {
-  artistName: string;
-  bio: string;
-  profileImage: File | null;
-  genre: string;
-  socialLinks: {
-    spotify: string;
-    instagram: string;
-    twitter: string;
-  };
-}
-
-const ProfileSetupForm = ({
-  onSubmit = () => {},
-  isLoading = false,
-}: ProfileSetupFormProps) => {
-  const [formData, setFormData] = useState<ProfileFormData>({
-    artistName: "",
-    bio: "",
-    profileImage: null,
-    genre: "",
-    socialLinks: {
-      spotify: "",
-      instagram: "",
-      twitter: "",
+export default function ProfileSetupForm({ onSubmit, isLoading = false }: ProfileSetupFormProps) {
+  const form = useForm<ProfileData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      artistName: '',
+      bio: '',
+      profileImage: null,
+      genre: '',
+      socialLinks: {
+        spotify: '',
+        instagram: '',
+        twitter: '',
+      },
     },
   });
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSocialLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      socialLinks: {
-        ...prev.socialLinks,
-        [name]: value,
-      },
-    }));
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    if (file) {
-      setFormData((prev) => ({ ...prev, profileImage: file }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
+  const handleSubmit = async (data: ProfileData) => {
+    await onSubmit(data);
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-background border-border">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold">
-          Заполните профиль артиста
-        </CardTitle>
-        <CardDescription>
-          Настройте свой профиль, чтобы помочь фанатам найти вашу музыку
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="artistName">Имя артиста</Label>
-            <Input
-              id="artistName"
-              name="artistName"
-              placeholder="Ваш сценический псевдоним или название группы"
-              value={formData.artistName}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="artistName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Имя артиста</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Ваше сценическое имя" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <div className="space-y-2">
-            <Label htmlFor="bio">Биография</Label>
-            <Textarea
-              id="bio"
-              name="bio"
-              placeholder="Расскажите о себе и своей музыке"
-              value={formData.bio}
-              onChange={handleInputChange}
-              rows={4}
-              required
-            />
-          </div>
+        <FormField
+          control={form.control}
+          name="bio"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Биография</FormLabel>
+              <FormControl>
+                <Textarea {...field} placeholder="Расскажите о себе" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <div className="space-y-2">
-            <Label htmlFor="profileImage">Фото профиля</Label>
-            <div className="flex items-center gap-4">
-              <div className="relative w-24 h-24 rounded-full overflow-hidden bg-muted flex items-center justify-center border border-border">
-                {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt="Profile preview"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <Music className="w-8 h-8 text-muted-foreground" />
-                )}
-              </div>
-              <div className="flex-1">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full flex items-center gap-2"
-                  onClick={() =>
-                    document.getElementById("profileImage")?.click()
-                  }
-                >
-                  <Upload className="w-4 h-4" />
-                  Загрузить изображение
-                </Button>
+        <FormField
+          control={form.control}
+          name="profileImage"
+          render={({ field: { value, onChange, ...field } }) => (
+            <FormItem>
+              <FormLabel>Фото профиля</FormLabel>
+              <FormControl>
                 <Input
-                  id="profileImage"
-                  name="profileImage"
                   type="file"
                   accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
+                  onChange={(e) => onChange(e.target.files?.[0] || null)}
+                  {...field}
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Рекомендуется: квадратный JPG или PNG, не менее 500x500px
-                </p>
-              </div>
-            </div>
-          </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <div className="space-y-2">
-            <Label htmlFor="genre">Основной жанр</Label>
-            <Select
-              value={formData.genre}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, genre: value }))
-              }
-            >
-              <SelectTrigger id="genre">
-                <SelectValue placeholder="Выберите жанр" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pop">Pop</SelectItem>
-                <SelectItem value="rock">Rock</SelectItem>
-                <SelectItem value="hiphop">Hip Hop</SelectItem>
-                <SelectItem value="rnb">R&B</SelectItem>
-                <SelectItem value="electronic">Electronic</SelectItem>
-                <SelectItem value="jazz">Jazz</SelectItem>
-                <SelectItem value="classical">Classical</SelectItem>
-                <SelectItem value="country">Country</SelectItem>
-                <SelectItem value="folk">Folk</SelectItem>
-                <SelectItem value="metal">Metal</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <FormField
+          control={form.control}
+          name="genre"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Основной жанр</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Например: Hip-Hop" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <div className="space-y-3">
-            <Label>Ссылки на соцсети</Label>
+        <div className="space-y-4">
+          <FormField
+            control={form.control}
+            name="socialLinks.spotify"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Spotify</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="https://spotify.com/..." />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className="flex items-center gap-2">
-              <LinkIcon className="w-4 h-4 text-muted-foreground" />
-              <Input
-                name="spotify"
-                placeholder="Ссылка на профиль Spotify"
-                value={formData.socialLinks.spotify}
-                onChange={handleSocialLinkChange}
-              />
-            </div>
+          <FormField
+            control={form.control}
+            name="socialLinks.instagram"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Instagram</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="https://instagram.com/..." />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className="flex items-center gap-2">
-              <LinkIcon className="w-4 h-4 text-muted-foreground" />
-              <Input
-                name="instagram"
-                placeholder="Ссылка на профиль Instagram"
-                value={formData.socialLinks.instagram}
-                onChange={handleSocialLinkChange}
-              />
-            </div>
+          <FormField
+            control={form.control}
+            name="socialLinks.twitter"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Twitter</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="https://twitter.com/..." />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-            <div className="flex items-center gap-2">
-              <LinkIcon className="w-4 h-4 text-muted-foreground" />
-              <Input
-                name="twitter"
-                placeholder="Ссылка на профиль Twitter/X"
-                value={formData.socialLinks.twitter}
-                onChange={handleSocialLinkChange}
-              />
-            </div>
-          </div>
-
-          <CardFooter className="px-0 pt-4 flex justify-end">
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Сохранение..." : "Завершить настройку"}
-            </Button>
-          </CardFooter>
-        </form>
-      </CardContent>
-    </Card>
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Сохранение..." : "Сохранить профиль"}
+        </Button>
+      </form>
+    </Form>
   );
-};
-
-export default ProfileSetupForm;
+}
