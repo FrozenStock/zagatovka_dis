@@ -14,7 +14,7 @@ export interface RegisterData {
   acceptTerms: boolean;
 }
 
-export interface ProfileFormData {
+export interface ProfileData {
   fullName: string;
   username: string;
   bio: string;

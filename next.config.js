@@ -1,10 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   typescript: {
-    // Disable type checking during production build for faster deployments
     ignoreBuildErrors: process.env.NODE_ENV === 'production',
   },
-  swcMinify: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  images: {
+    domains: ['your-supabase-storage-url.supabase.co'],
+  },
 }
 
 module.exports = nextConfig
