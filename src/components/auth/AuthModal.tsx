@@ -43,7 +43,7 @@ const AuthModal = ({
     }
   };
 
-  const handleProfileSubmit = async (data: ProfileFormData) => {
+  const handleProfileSubmit = async (data: ProfileFormData): Promise<void> => {
     try {
       console.log("Profile setup submitted:", data);
       onOpenChange(false);

@@ -46,5 +46,11 @@ export default function ProfileSetupForm({ onSubmit }: ProfileSetupFormProps) {
     },
   });
 
-  // ...rest of the component implementation
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Form fields implementation */}
+      </form>
+    </Form>
+  );
 }
