@@ -15,13 +15,13 @@ export interface RegisterData {
 }
 
 export interface ProfileData {
-  artistName: string;
+  fullName: string;
+  username: string;
   bio: string;
-  profileImage: File | null;
-  genre: string;
-  socialLinks: {
-    spotify: string;
-    instagram: string;
-    twitter: string;
+  avatarUrl?: string;
+  socialLinks?: {
+    spotify?: string;
+    instagram?: string;
+    twitter?: string;
   };
 }

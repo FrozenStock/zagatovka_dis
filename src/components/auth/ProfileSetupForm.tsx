@@ -16,15 +16,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 const profileSchema = z.object({
-  artistName: z.string().min(2, 'Минимальная длина имени 2 символа'),
-  bio: z.string().max(500, 'Максимальная длина био 500 символов'),
-  profileImage: z.any().nullable(),
-  genre: z.string().min(1, 'Выберите жанр'),
+  fullName: z.string().min(2, "Имя должно содержать минимум 2 символа"),
+  username: z.string().min(3, "Имя пользователя должно содержать минимум 3 символа"),
+  bio: z.string().max(500, "Биография не может быть длиннее 500 символов"),
   socialLinks: z.object({
-    spotify: z.string().url('Введите корректный URL').or(z.string().length(0)),
-    instagram: z.string().url('Введите корректный URL').or(z.string().length(0)),
-    twitter: z.string().url('Введите корректный URL').or(z.string().length(0)),
-  }),
+    spotify: z.string().url().optional(),
+    instagram: z.string().url().optional(),
+    twitter: z.string().url().optional(),
+  }).optional(),
 });
 
 interface ProfileSetupFormProps {
@@ -36,14 +35,13 @@ export default function ProfileSetupForm({ onSubmit, isLoading = false }: Profil
   const form = useForm<ProfileData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      artistName: '',
-      bio: '',
-      profileImage: null,
-      genre: '',
+      fullName: "",
+      username: "",
+      bio: "",
       socialLinks: {
-        spotify: '',
-        instagram: '',
-        twitter: '',
+        spotify: "",
+        instagram: "",
+        twitter: "",
       },
     },
   });
@@ -57,12 +55,26 @@ export default function ProfileSetupForm({ onSubmit, isLoading = false }: Profil
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="artistName"
+          name="fullName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Имя артиста</FormLabel>
+              <FormLabel>Полное имя</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Ваше сценическое имя" />
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Имя пользователя</FormLabel>
+              <FormControl>
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -74,42 +86,9 @@ export default function ProfileSetupForm({ onSubmit, isLoading = false }: Profil
           name="bio"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Биография</FormLabel>
+              <FormLabel>О себе</FormLabel>
               <FormControl>
-                <Textarea {...field} placeholder="Расскажите о себе" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="profileImage"
-          render={({ field: { value, onChange, ...field } }) => (
-            <FormItem>
-              <FormLabel>Фото профиля</FormLabel>
-              <FormControl>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => onChange(e.target.files?.[0] || null)}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="genre"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Основной жанр</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Например: Hip-Hop" />
+                <Textarea {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
