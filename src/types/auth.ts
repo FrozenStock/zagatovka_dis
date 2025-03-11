@@ -1,0 +1,18 @@
+export type TabType = "login" | "register" | "profile";
+
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface ProfileData {
+  username: string;
+  fullName: string;
+  bio?: string;
+}

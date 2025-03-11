@@ -7,28 +7,12 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import ProfileSetupForm from "./ProfileSetupForm";
 
-// Определение типов для форм
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface RegisterData {
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-interface ProfileData {
-  username: string;
-  fullName: string;
-  bio?: string;
-}
+type TabType = "login" | "register" | "profile";
 
 interface AuthModalProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  defaultTab?: "login" | "register" | "profile";
+  defaultTab?: TabType;
   showProfileSetup?: boolean;
 }
 
@@ -38,7 +22,7 @@ const AuthModal = ({
   defaultTab = "login",
   showProfileSetup = false,
 }: AuthModalProps) => {
-  const [activeTab, setActiveTab] = useState<"login" | "register" | "profile">(defaultTab);
+  const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
   const [showProfile, setShowProfile] = useState<boolean>(showProfileSetup);
 
   const handleLoginSubmit = async (data: LoginData) => {
@@ -81,6 +65,10 @@ const AuthModal = ({
     }
   };
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as TabType);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-background">
@@ -97,7 +85,7 @@ const AuthModal = ({
         {!showProfile ? (
           <Tabs
             value={activeTab}
-            onValueChange={setActiveTab}
+            onValueChange={handleTabChange}
             className="w-full"
           >
             <div className="px-6">
