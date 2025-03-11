@@ -49,8 +49,7 @@ export default async function EditReleasePage({
   return (
     <DashboardLayout
       user={{
-        name:
-          profile.artist_name || user.email?.split("@")[0] || "Артист",
+        name: profile.artist_name || user.email?.split("@")[0] || "Артист",
         email: user.email || "",
         avatar: profile.profile_image_url || undefined,
       }}
@@ -67,3 +66,16 @@ export default async function EditReleasePage({
 
         <Card className="dark:bg-card/80 dark:backdrop-blur-sm">
           <CardHeader>
+            <CardTitle>Редактирование релиза</CardTitle>
+            <CardDescription>
+              Обновите информацию о вашем релизе "{release.title}"
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <EditReleaseForm userId={user.id} release={release} />
+          </CardContent>
+        </Card>
+      </div>
+    </DashboardLayout>
+  );
+}
