@@ -52,7 +52,6 @@ export default function RegisterPage() {
         throw new Error(result.error || "Ошибка регистрации");
       }
 
-      // Show success message
       setSuccess(true);
       setError(null);
     } catch (error: any) {
