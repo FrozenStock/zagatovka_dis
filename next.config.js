@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    ignoreBuildErrors: process.env.NODE_ENV === 'production'
+    // Disable type checking during production build for faster deployments
+    ignoreBuildErrors: process.env.NODE_ENV === 'production',
   },
   swcMinify: true,
 }

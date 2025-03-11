@@ -49,7 +49,7 @@ export default function ProfileSetupForm({ onSubmit }: ProfileSetupFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {/* Form fields implementation */}
+        {/* ...existing form fields... */}
       </form>
     </Form>
   );

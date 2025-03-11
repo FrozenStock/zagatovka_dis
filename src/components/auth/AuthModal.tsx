@@ -24,25 +24,6 @@ const AuthModal = ({
   const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
   const [showProfile, setShowProfile] = useState<boolean>(showProfileSetup);
 
-  const handleLoginSubmit = async (data: LoginData) => {
-    try {
-      console.log("Login submitted:", data);
-      onOpenChange(false);
-    } catch (error) {
-      console.error("Login error:", error);
-    }
-  };
-
-  const handleRegisterSubmit = async (data: RegisterData) => {
-    try {
-      console.log("Registration submitted:", data);
-      setShowProfile(true);
-      setActiveTab("profile");
-    } catch (error) {
-      console.error("Registration error:", error);
-    }
-  };
-
   const handleProfileSubmit = async (data: ProfileFormData): Promise<void> => {
     try {
       console.log("Profile setup submitted:", data);
@@ -94,7 +75,9 @@ const AuthModal = ({
           </Tabs>
         ) : (
           <div className="p-6">
-            <ProfileSetupForm onSubmit={handleProfileSubmit} />
+            <ProfileSetupForm 
+              onSubmit={handleProfileSubmit} 
+            />
           </div>
         )}
       </DialogContent>
