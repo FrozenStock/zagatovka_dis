@@ -1,0 +1,76 @@
+.tsx
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ProfileData } from "@/types/auth";
+
+const profileSchema = z.object({
+  artistName: z.string().min(2, "Минимальная длина имени 2 символа"),
+  bio: z.string().max(500, "Максимальная длина био 500 символов"),
+  profileImage: z.any().nullable(),
+  genre: z.string().min(1, "Выберите жанр"),
+  socialLinks: z.object({
+    spotify: z.string().url().or(z.string().length(0)),
+    instagram: z.string().url().or(z.string().length(0)),
+    twitter: z.string().url().or(z.string().length(0)),
+  }),
+});
+
+interface ProfileSetupFormProps {
+  onSubmit: (data: ProfileData) => Promise<void>;
+  isLoading?: boolean;
+}
+
+export default function ProfileSetupForm({ onSubmit, isLoading = false }: ProfileSetupFormProps) {
+  const form = useForm<ProfileData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      artistName: "",
+      bio: "",
+      profileImage: null,
+      genre: "",
+      socialLinks: {
+        spotify: "",
+        instagram: "",
+        twitter: "",
+      },
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* ... остальные поля формы ... */}
+        <FormField
+          control={form.control}
+          name="genre"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Жанр</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Например: Hip-Hop, Rock, Pop" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Сохранение..." : "Сохранить профиль"}
+        </Button>
+      </form>
+    </Form>
+  );
+}

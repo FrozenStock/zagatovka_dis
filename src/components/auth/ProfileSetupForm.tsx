@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ProfileData } from '@/types/auth';
-import { Button } from '@/components/ui/button';
+"use client";
+
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ProfileData } from "@/types/auth";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -11,19 +12,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const profileSchema = z.object({
   fullName: z.string().min(2, "Имя должно содержать минимум 2 символа"),
   username: z.string().min(3, "Имя пользователя должно содержать минимум 3 символа"),
   bio: z.string().max(500, "Биография не может быть длиннее 500 символов"),
   socialLinks: z.object({
-    spotify: z.string().url().optional(),
-    instagram: z.string().url().optional(),
-    twitter: z.string().url().optional(),
-  }).optional(),
+    spotify: z.string().url("Неверный формат URL").or(z.string().length(0)),
+    instagram: z.string().url("Неверный формат URL").or(z.string().length(0)),
+    twitter: z.string().url("Неверный формат URL").or(z.string().length(0)),
+  }),
 });
 
 interface ProfileSetupFormProps {
@@ -46,13 +47,9 @@ export default function ProfileSetupForm({ onSubmit, isLoading = false }: Profil
     },
   });
 
-  const handleSubmit = async (data: ProfileData) => {
-    await onSubmit(data);
-  };
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="fullName"
@@ -60,7 +57,7 @@ export default function ProfileSetupForm({ onSubmit, isLoading = false }: Profil
             <FormItem>
               <FormLabel>Полное имя</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="Ваше полное имя" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -74,7 +71,7 @@ export default function ProfileSetupForm({ onSubmit, isLoading = false }: Profil
             <FormItem>
               <FormLabel>Имя пользователя</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="Ваш уникальный идентификатор" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -88,7 +85,10 @@ export default function ProfileSetupForm({ onSubmit, isLoading = false }: Profil
             <FormItem>
               <FormLabel>О себе</FormLabel>
               <FormControl>
-                <Textarea {...field} />
+                <Textarea 
+                  {...field} 
+                  placeholder="Расскажите о себе" 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

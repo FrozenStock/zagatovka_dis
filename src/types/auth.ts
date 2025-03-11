@@ -19,9 +19,9 @@ export interface ProfileData {
   username: string;
   bio: string;
   avatarUrl?: string;
-  socialLinks?: {
-    spotify?: string;
-    instagram?: string;
-    twitter?: string;
+  socialLinks: {
+    spotify: string;
+    instagram: string;
+    twitter: string;
   };
 }
