@@ -65,26 +65,36 @@ export default async function ReleaseDetailPage({
 
   // Fetch all data in parallel
   const [releaseResponse, tracksResponse, statsResponse] = await Promise.all([
-    supabase.from("releases")
+    supabase
+      .from("releases")
       .select("*")
       .eq("id", params.id)
       .eq("artist_id", user.id)
       .single(),
     
-    supabase.from("tracks")
+    supabase
+      .from("tracks")
       .select("*")
       .eq("release_id", params.id)
       .order("track_number", { ascending: true }),
     
-    supabase.from("streaming_stats")
-      .select("platform, sum(stream_count)")
+    supabase
+      .from("streaming_stats")
+      .select(`
+        platform,
+        stream_count: count(*)
+      `)
       .eq("release_id", params.id)
-      .group("platform")
+      .groupBy('platform')
   ]);
 
-  const release = releaseResponse.data as Release;
-  const tracks = tracksResponse.data as Track[];
-  const streamingStats = statsResponse.data as StreamingStat[];
+  if (releaseResponse.error) {
+    throw new Error(releaseResponse.error.message);
+  }
+
+  const release = releaseResponse.data;
+  const tracks = tracksResponse.data || [];
+  const streamingStats = statsResponse.data || [];
 
   if (!release) {
     redirect("/dashboard/releases");
