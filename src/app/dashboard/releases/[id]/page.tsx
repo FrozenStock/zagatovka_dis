@@ -3,27 +3,52 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
-  ArrowLeft,
-  Music,
-  Calendar,
-  BarChart3,
-  Clock,
-  Edit,
-  Trash,
-  Share2,
-  Download,
+  ArrowLeft, Music, Calendar, BarChart3, Edit, 
+  Trash, Share2, Download
 } from "lucide-react";
 import Link from "next/link";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  Card, CardContent, CardDescription, 
+  CardFooter, CardHeader, CardTitle
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Release, Track, StreamingStat } from "@/types/releases";
+
+const getStatusLabel = (status: Release['status']) => {
+  const statusMap = {
+    published: "Опубликован",
+    scheduled: "Запланирован",
+    rejected: "Отклонен",
+    draft: "Черновик"
+  };
+  return statusMap[status] || status;
+};
+
+const getStatusVariant = (status: Release['status']) => {
+  const variantMap = {
+    published: "default",
+    scheduled: "outline",
+    rejected: "secondary",
+    draft: "secondary"
+  };
+  return variantMap[status] || "secondary";
+};
+
+const formatDuration = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = (seconds % 60).toString().padStart(2, '0');
+  return `${minutes}:${remainingSeconds}`;
+};
+
+const getPlatformColor = (platform: string) => {
+  const colorMap = {
+    'Spotify': 'bg-green-500',
+    'Apple Music': 'bg-pink-500',
+    'YouTube Music': 'bg-red-500'
+  };
+  return colorMap[platform as keyof typeof colorMap] || 'bg-blue-500';
+};
 
 export default async function ReleaseDetailPage({
   params,
@@ -38,31 +63,32 @@ export default async function ReleaseDetailPage({
 
   const supabase = createClient();
 
-  // Fetch release details
-  const { data: release } = await supabase
-    .from("releases")
-    .select("*")
-    .eq("id", params.id)
-    .eq("artist_id", user.id)
-    .single();
+  // Fetch all data in parallel
+  const [releaseResponse, tracksResponse, statsResponse] = await Promise.all([
+    supabase.from("releases")
+      .select("*")
+      .eq("id", params.id)
+      .eq("artist_id", user.id)
+      .single(),
+    
+    supabase.from("tracks")
+      .select("*")
+      .eq("release_id", params.id)
+      .order("track_number", { ascending: true }),
+    
+    supabase.from("streaming_stats")
+      .select("platform, sum(stream_count)")
+      .eq("release_id", params.id)
+      .group("platform")
+  ]);
+
+  const release = releaseResponse.data as Release;
+  const tracks = tracksResponse.data as Track[];
+  const streamingStats = statsResponse.data as StreamingStat[];
 
   if (!release) {
     redirect("/dashboard/releases");
   }
-
-  // Fetch tracks for this release
-  const { data: tracks } = await supabase
-    .from("tracks")
-    .select("*")
-    .eq("release_id", release.id)
-    .order("track_number", { ascending: true });
-
-  // Fetch streaming stats for this release
-  const { data: streamingStats } = await supabase
-    .from("streaming_stats")
-    .select("platform, sum(stream_count)")
-    .eq("release_id", release.id)
-    .group("platform");
 
   return (
     <div className="container py-6 space-y-8">
@@ -96,21 +122,9 @@ export default async function ReleaseDetailPage({
                 <div className="flex justify-between items-start">
                   <div>
                     <Badge
-                      variant={
-                        release.status === "published"
-                          ? "default"
-                          : release.status === "scheduled"
-                            ? "outline"
-                            : "secondary"
-                      }
+                      variant={getStatusVariant(release.status)}
                     >
-                      {release.status === "published"
-                        ? "Опубликован"
-                        : release.status === "scheduled"
-                          ? "Запланирован"
-                          : release.status === "rejected"
-                            ? "Отклонен"
-                            : "Черновик"}
+                      {getStatusLabel(release.status)}
                     </Badge>
                     <h1 className="text-3xl font-bold mt-2">{release.title}</h1>
                   </div>
@@ -192,8 +206,7 @@ export default async function ReleaseDetailPage({
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground">
-                          {Math.floor(track.duration / 60)}:
-                          {(track.duration % 60).toString().padStart(2, "0")}
+                          {formatDuration(track.duration)}
                         </span>
                         {track.audio_url && (
                           <Button variant="ghost" size="icon">
@@ -237,15 +250,7 @@ export default async function ReleaseDetailPage({
                       </div>
                       <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
                         <div
-                          className={`h-full ${
-                            stat.platform === "Spotify"
-                              ? "bg-green-500"
-                              : stat.platform === "Apple Music"
-                                ? "bg-pink-500"
-                                : stat.platform === "YouTube Music"
-                                  ? "bg-red-500"
-                                  : "bg-blue-500"
-                          }`}
+                          className={`h-full ${getPlatformColor(stat.platform)}`}
                           style={{
                             width: `${Math.min(100, parseInt(stat.sum) / 100)}%`,
                           }}
