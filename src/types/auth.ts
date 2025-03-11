@@ -7,16 +7,11 @@ export interface LoginData {
 }
 
 export interface RegisterData {
+  name: string;
   email: string;
   password: string;
   confirmPassword: string;
   acceptTerms: boolean;
-}
-
-export interface SocialLinks {
-  spotify: string;
-  instagram: string;
-  twitter: string;
 }
 
 export interface ProfileData {
@@ -24,5 +19,9 @@ export interface ProfileData {
   bio: string;
   profileImage: File | null;
   genre: string;
-  socialLinks: SocialLinks;
+  socialLinks: {
+    spotify: string;
+    instagram: string;
+    twitter: string;
+  };
 }
