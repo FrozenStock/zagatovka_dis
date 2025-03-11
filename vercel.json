@@ -5,6 +5,76 @@
   "framework": "nextjs",
   "env": {
     "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key"
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
+    "SUPABASE_JWT_SECRET": "@supabase_jwt_secret",
+    "POSTGRES_HOST": "@postgres_host",
+    "POSTGRES_USER": "@postgres_user",
+    "POSTGRES_PASSWORD": "@postgres_password",
+    "POSTGRES_DATABASE": "@postgres_database",
+    "POSTGRES_URL": "@postgres_url",
+    "POSTGRES_URL_NON_POOLING": "@postgres_url_non_pooling",
+    "POSTGRES_PRISMA_URL": "@postgres_prisma_url"
+  },
+  "supabaseConfig": {
+    "NEXT_PUBLIC_SUPABASE_URL": {
+      "Value": "Your Supabase project URL",
+      "Type": "Production",
+      "Should be public": "Yes"
+    },
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": {
+      "Value": "Your Supabase anonymous key",
+      "Type": "Production",
+      "Should be public": "Yes"
+    },
+    "SUPABASE_SERVICE_ROLE_KEY": {
+      "Value": "Your Supabase service role key",
+      "Type": "Production, Sensitive",
+      "Should be public": "No"
+    },
+    "SUPABASE_JWT_SECRET": {
+      "Value": "Your JWT secret from Supabase",
+      "Type": "Production, Sensitive",
+      "Should be public": "No"
+    }
+  },
+  "databaseConfig": {
+    "POSTGRES_HOST": {
+      "Value": "Your database host",
+      "Type": "Production",
+      "Should be public": "No"
+    },
+    "POSTGRES_USER": {
+      "Value": "Your database username",
+      "Type": "Production",
+      "Should be public": "No"
+    },
+    "POSTGRES_PASSWORD": {
+      "Value": "Your database password",
+      "Type": "Production, Sensitive",
+      "Should be public": "No"
+    },
+    "POSTGRES_DATABASE": {
+      "Value": "Your database name",
+      "Type": "Production",
+      "Should be public": "No"
+    }
+  },
+  "databaseURLs": {
+    "POSTGRES_URL": {
+      "Value": "postgresql://user:password@host:5432/database",
+      "Type": "Production, Sensitive",
+      "Should be public": "No"
+    },
+    "POSTGRES_URL_NON_POOLING": {
+      "Value": "postgresql://user:password@host:5432/database?pgbouncer=false",
+      "Type": "Production, Sensitive",
+      "Should be public": "No"
+    },
+    "POSTGRES_PRISMA_URL": {
+      "Value": "postgresql://user:password@host:5432/database?pgbouncer=true",
+      "Type": "Production, Sensitive",
+      "Should be public": "No"
+    }
   }
 }
