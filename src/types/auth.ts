@@ -14,11 +14,10 @@ export interface RegisterData {
   acceptTerms: boolean;
 }
 
-export interface ProfileData {
+export interface ProfileFormData {
   fullName: string;
   username: string;
   bio: string;
-  avatarUrl?: string;
   socialLinks: {
     spotify: string;
     instagram: string;

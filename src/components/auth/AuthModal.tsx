@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import ProfileSetupForm from "./ProfileSetupForm";
-import { LoginData, RegisterData, ProfileData, TabType } from "@/types/auth";
+import { LoginData, RegisterData, ProfileFormData, TabType } from "@/types/auth";
 
 interface AuthModalProps {
   open?: boolean;
@@ -26,7 +26,6 @@ const AuthModal = ({
 
   const handleLoginSubmit = async (data: LoginData) => {
     try {
-      // Здесь должна быть логика аутентификации
       console.log("Login submitted:", data);
       onOpenChange(false);
     } catch (error) {
@@ -36,7 +35,6 @@ const AuthModal = ({
 
   const handleRegisterSubmit = async (data: RegisterData) => {
     try {
-      // Здесь должна быть логика регистрации
       console.log("Registration submitted:", data);
       setShowProfile(true);
       setActiveTab("profile");
@@ -45,27 +43,13 @@ const AuthModal = ({
     }
   };
 
-  const handleProfileSubmit = async (data: ProfileData) => {
+  const handleProfileSubmit = async (data: ProfileFormData) => {
     try {
-      // Здесь должна быть логика сохранения профиля
       console.log("Profile setup submitted:", data);
       onOpenChange(false);
     } catch (error) {
       console.error("Profile setup error:", error);
     }
-  };
-
-  const handleForgotPassword = async () => {
-    try {
-      // Здесь должна быть логика восстановления пароля
-      console.log("Forgot password requested");
-    } catch (error) {
-      console.error("Forgot password error:", error);
-    }
-  };
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value as TabType);
   };
 
   return (
@@ -84,7 +68,7 @@ const AuthModal = ({
         {!showProfile ? (
           <Tabs
             value={activeTab}
-            onValueChange={handleTabChange}
+            onValueChange={(value: TabType) => setActiveTab(value)}
             className="w-full"
           >
             <div className="px-6">
@@ -97,7 +81,7 @@ const AuthModal = ({
             <TabsContent value="login" className="mt-0">
               <LoginForm
                 onSubmit={handleLoginSubmit}
-                onForgotPassword={handleForgotPassword}
+                onForgotPassword={() => {}}
               />
             </TabsContent>
 
