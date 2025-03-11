@@ -1,6 +1,8 @@
 import { getUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { getStatusLabel, getStatusVariant } from "@/lib/utils/format";
+import { Release, Track, StreamingStat } from "@/types/releases";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft, Music, Calendar, BarChart3, Edit, 
@@ -13,27 +15,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Release, Track, StreamingStat } from "@/types/releases";
-
-const getStatusLabel = (status: Release['status']) => {
-  const statusMap = {
-    published: "Опубликован",
-    scheduled: "Запланирован",
-    rejected: "Отклонен",
-    draft: "Черновик"
-  };
-  return statusMap[status] || status;
-};
-
-const getStatusVariant = (status: Release['status']) => {
-  const variantMap = {
-    published: "default",
-    scheduled: "outline",
-    rejected: "secondary",
-    draft: "secondary"
-  };
-  return variantMap[status] || "secondary";
-};
 
 const formatDuration = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
@@ -64,7 +45,6 @@ export default async function ReleaseDetailPage({
   const supabase = createClient();
 
   try {
-    // Fetch all data in parallel
     const [releaseResponse, tracksResponse, statsResponse] = await Promise.all([
       supabase
         .from("releases")
@@ -89,9 +69,9 @@ export default async function ReleaseDetailPage({
       throw new Error(releaseResponse.error.message);
     }
 
-    const release = releaseResponse.data;
-    const tracks = tracksResponse.data || [];
-    const streamingStats = statsResponse.data || [];
+    const release = releaseResponse.data as Release;
+    const tracks = tracksResponse.data as Track[] || [];
+    const streamingStats = statsResponse.data as StreamingStat[] || [];
 
     if (!release) {
       redirect("/dashboard/releases");

@@ -10,6 +10,8 @@ export interface Release {
   description?: string;
 }
 
+export type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
+
 export interface Track {
   id: string;
   release_id: string;
