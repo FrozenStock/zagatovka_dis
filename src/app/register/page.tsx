@@ -37,8 +37,7 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      // Используем Supabase для регистрации
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const { error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -53,9 +52,7 @@ export default function RegisterPage() {
       }
 
       setSuccess(true);
-      setError(null);
     } catch (error: any) {
-      console.error("Registration error:", error);
       setError(error.message || "Ошибка при создании аккаунта");
     } finally {
       setIsLoading(false);
@@ -66,7 +63,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         {error && (
-          <div className="mb-4 p-3 bg-destructive/15 border border-destructive text-destructive rounded-md text-sm">
+          <div className="mb-4 p-3 bg-destructive/15 border border-destructive text-destructive rounded-md">
             {error}
           </div>
         )}

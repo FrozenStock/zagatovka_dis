@@ -18,11 +18,12 @@ import {
 } from "../ui/form";
 
 interface RegisterFormProps {
-  onSubmit?: (data: RegisterFormValues) => void;
-  onLoginClick?: () => void;
+  onSubmit: (data: RegisterData) => Promise<void>;
+  onLoginClick: () => void;
+  isLoading?: boolean;
 }
 
-interface RegisterFormValues {
+interface RegisterData {
   name: string;
   email: string;
   password: string;
@@ -30,14 +31,15 @@ interface RegisterFormValues {
   acceptTerms: boolean;
 }
 
-const RegisterForm = ({
-  onSubmit = () => {},
-  onLoginClick = () => {},
-}: RegisterFormProps) => {
+export default function RegisterForm({
+  onSubmit,
+  onLoginClick,
+  isLoading = false,
+}: RegisterFormProps) {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
-  const form = useReactHookForm<RegisterFormValues>({
+  const form = useReactHookForm<RegisterData>({
     defaultValues: {
       name: "",
       email: "",
@@ -47,7 +49,7 @@ const RegisterForm = ({
     },
   });
 
-  const handleSubmit = async (data: RegisterFormValues) => {
+  const handleSubmit = async (data: RegisterData) => {
     if (data.password !== data.confirmPassword) {
       form.setError("confirmPassword", {
         type: "manual",
@@ -210,8 +212,8 @@ const RegisterForm = ({
             )}
           />
 
-          <Button type="submit" className="w-full">
-            Создать аккаунт
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Регистрация..." : "Зарегистрироваться"}
           </Button>
         </form>
       </Form>
@@ -224,6 +226,4 @@ const RegisterForm = ({
       </div>
     </div>
   );
-};
-
-export default RegisterForm;
+}
