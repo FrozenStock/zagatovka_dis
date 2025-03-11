@@ -29,6 +29,7 @@ interface ProfileFormData {
   artistName: string;
   bio: string;
   profileImage: File | null;
+  profileImageUrl: string | null;
   genre: string;
   socialLinks: {
     spotify: string;
@@ -45,6 +46,7 @@ const ProfileSetupForm = ({
     artistName: "",
     bio: "",
     profileImage: null,
+    profileImageUrl: null,
     genre: "",
     socialLinks: {
       spotify: "",
@@ -79,7 +81,9 @@ const ProfileSetupForm = ({
       setFormData((prev) => ({ ...prev, profileImage: file }));
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        const result = reader.result as string;
+        setImagePreview(result);
+        setFormData((prev) => ({ ...prev, profileImageUrl: result }));
       };
       reader.readAsDataURL(file);
     }

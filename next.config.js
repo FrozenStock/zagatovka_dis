@@ -3,7 +3,9 @@
 const nextConfig = {
   images: {
     domains: ["images.unsplash.com"],
+    unoptimized: process.env.NODE_ENV === "production",
   },
+  output: "standalone",
 };
 
 if (process.env.NEXT_PUBLIC_TEMPO) {

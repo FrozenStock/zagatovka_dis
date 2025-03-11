@@ -70,7 +70,7 @@ export default async function ReleaseDetailPage({
     .from("streaming_stats")
     .select("platform, sum(stream_count)")
     .eq("release_id", release.id)
-    .group("platform");
+    .order("platform");
 
   return (
     <DashboardLayout
