@@ -7,6 +7,23 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import ProfileSetupForm from "./ProfileSetupForm";
 
+// Определяем типы для форм
+interface LoginFormValues {
+  email: string;
+  password: string;
+}
+
+interface RegisterFormValues {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface ProfileSetupFormValues {
+  username: string;
+  bio?: string;
+}
+
 interface AuthModalProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -14,34 +31,36 @@ interface AuthModalProps {
   showProfileSetup?: boolean;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({
+const AuthModal = ({
   open = true,
-  onOpenChange,
+  onOpenChange = () => {},
   defaultTab = "login",
   showProfileSetup = false,
-}) => {
+}: AuthModalProps) => {
   const [activeTab, setActiveTab] = useState<"login" | "register" | "profile">(
     defaultTab,
   );
   const [showProfile, setShowProfile] = useState<boolean>(showProfileSetup);
 
-  const handleLoginSubmit = (data: Record<string, unknown>) => {
+  const handleLoginSubmit = (data: LoginFormValues) => {
     console.log("Login submitted:", data);
+    // Здесь можно добавить логику аутентификации
   };
 
-  const handleRegisterSubmit = (data: Record<string, unknown>) => {
+  const handleRegisterSubmit = (data: RegisterFormValues) => {
     console.log("Registration submitted:", data);
     setShowProfile(true);
     setActiveTab("profile");
   };
 
-  const handleProfileSubmit = (data: Record<string, unknown>) => {
+  const handleProfileSubmit = (data: ProfileSetupFormValues) => {
     console.log("Profile setup submitted:", data);
     onOpenChange?.(false);
   };
 
   const handleForgotPassword = () => {
     console.log("Forgot password clicked");
+    // Здесь можно добавить логику восстановления пароля
   };
 
   return (
