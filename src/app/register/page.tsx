@@ -7,19 +7,22 @@ import RegisterForm from "@/components/auth/RegisterForm";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  acceptTerms: boolean;
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const supabase = createClient();
 
-  const handleRegister = async (data: {
-    name: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    acceptTerms: boolean;
-  }) => {
+  const handleRegister = async (data: RegisterData) => {
     if (data.password !== data.confirmPassword) {
       setError("Пароли не совпадают");
       return;
@@ -34,30 +37,26 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Используем Supabase для регистрации
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            name: data.name,
+          },
         },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          password: data.password,
-        }),
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Ошибка регистрации");
+      if (authError) {
+        throw new Error(authError.message);
       }
 
-      // Show success message
       setSuccess(true);
       setError(null);
     } catch (error: any) {
       console.error("Registration error:", error);
-      setError(error.message || "Failed to create account");
+      setError(error.message || "Ошибка при создании аккаунта");
     } finally {
       setIsLoading(false);
     }
@@ -79,9 +78,14 @@ export default function RegisterPage() {
               <p>Пожалуйста, проверьте вашу электронную почту для подтверждения аккаунта.</p>
             </div>
             <p className="mb-4 text-center text-muted-foreground">
-              Мы отправили письмо с ссылкой для подтверждения на указанный вами адрес. Пожалуйста, перейдите по ссылке в письме для активации вашего аккаунта.  
+              Мы отправили письмо с ссылкой для подтверждения на указанный вами адрес. 
+              Пожалуйста, перейдите по ссылке в письме для активации вашего аккаунта.
             </p>
-            <Button className="w-full" onClick={() => router.push("/login")}>
+            <Button 
+              className="w-full" 
+              onClick={() => router.push("/login")}
+              disabled={isLoading}
+            >
               Перейти к странице входа
             </Button>
           </div>
@@ -89,12 +93,17 @@ export default function RegisterPage() {
           <RegisterForm
             onSubmit={handleRegister}
             onLoginClick={() => router.push("/login")}
+            isLoading={isLoading}
           />
-        )
+        )}
 
         <div className="mt-6 text-center text-sm">
           Уже есть аккаунт?{" "}
-          <Link href="/login" className="text-primary hover:underline">
+          <Link 
+            href="/login" 
+            className="text-primary hover:underline"
+            tabIndex={0}
+          >
             Войти
           </Link>
         </div>
