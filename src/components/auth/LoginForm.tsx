@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import { useForm as useReactHookForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { LoginData } from "@/types/auth";
 
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Checkbox } from "../ui/checkbox";
-import { Label } from "../ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -16,20 +18,28 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
+} from "@/components/ui/form";
+
+const loginSchema = z.object({
+  email: z.string().email("Введите корректный email"),
+  password: z.string().min(6, "Минимальная длина пароля 6 символов"),
+  rememberMe: z.boolean().default(false),
+});
 
 interface LoginFormProps {
   onSubmit: (data: LoginData) => Promise<void>;
   onForgotPassword: () => void;
 }
 
-const LoginForm = ({
-  onSubmit = () => {},
-  onForgotPassword = () => {},
-}: LoginFormProps) => {
+export default function LoginForm({
+  onSubmit,
+  onForgotPassword,
+}: LoginFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const form = useReactHookForm<LoginFormValues>({
+  const form = useForm<LoginData>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -37,11 +47,14 @@ const LoginForm = ({
     },
   });
 
-  const handleSubmit = async (data: LoginFormValues) => {
+  const handleSubmit = async (data: LoginData) => {
+    setIsLoading(true);
     try {
       await onSubmit(data);
     } catch (error) {
-      console.error("Login form error:", error);
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -144,18 +157,17 @@ const LoginForm = ({
               variant="link"
               className="px-0 text-sm"
               onClick={onForgotPassword}
+              disabled={isLoading}
             >
               Забыли пароль?
             </Button>
           </div>
 
-          <Button type="submit" className="w-full">
-            Войти
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Вход..." : "Войти"}
           </Button>
         </form>
       </Form>
     </div>
   );
-};
-
-export default LoginForm;
+}

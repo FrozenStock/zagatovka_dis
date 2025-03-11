@@ -3,6 +3,7 @@ export type TabType = "login" | "register" | "profile";
 export interface LoginData {
   email: string;
   password: string;
+  rememberMe: boolean;
 }
 
 export interface RegisterData {
