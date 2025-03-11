@@ -6,6 +6,7 @@ import Link from "next/link";
 import RegisterForm from "@/components/auth/RegisterForm";
 import { createClient } from "@/lib/supabase/client";
 import { RegisterData } from "@/types/auth";
+import { Button } from "@/components/ui/button";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -70,6 +71,16 @@ export default function RegisterPage() {
             isLoading={isLoading}
           />
         )}
+
+        <div className="mt-6 text-center text-sm">
+          Уже есть аккаунт?{" "}
+          <Link 
+            href="/login" 
+            className="text-primary hover:underline"
+          >
+            Войти
+          </Link>
+        </div>
       </div>
     </div>
   );
