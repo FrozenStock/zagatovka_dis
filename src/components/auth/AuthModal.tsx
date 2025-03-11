@@ -7,6 +7,24 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import ProfileSetupForm from "./ProfileSetupForm";
 
+// Определение типов для форм
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+interface RegisterData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface ProfileData {
+  username: string;
+  fullName: string;
+  bio?: string;
+}
+
 interface AuthModalProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -20,32 +38,47 @@ const AuthModal = ({
   defaultTab = "login",
   showProfileSetup = false,
 }: AuthModalProps) => {
-  const [activeTab, setActiveTab] = useState<string>(defaultTab);
+  const [activeTab, setActiveTab] = useState<"login" | "register" | "profile">(defaultTab);
   const [showProfile, setShowProfile] = useState<boolean>(showProfileSetup);
 
-  const handleLoginSubmit = (data: any) => {
-    console.log("Login submitted:", data);
-    // Here you would typically handle authentication
-    // For demo purposes, we'll just log the data
+  const handleLoginSubmit = async (data: LoginData) => {
+    try {
+      // Здесь должна быть логика аутентификации
+      console.log("Login submitted:", data);
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
 
-  const handleRegisterSubmit = (data: any) => {
-    console.log("Registration submitted:", data);
-    // After successful registration, show profile setup
-    setShowProfile(true);
-    setActiveTab("profile");
+  const handleRegisterSubmit = async (data: RegisterData) => {
+    try {
+      // Здесь должна быть логика регистрации
+      console.log("Registration submitted:", data);
+      setShowProfile(true);
+      setActiveTab("profile");
+    } catch (error) {
+      console.error("Registration error:", error);
+    }
   };
 
-  const handleProfileSubmit = (data: any) => {
-    console.log("Profile setup submitted:", data);
-    // Here you would typically save the profile data
-    // and then close the modal or redirect
-    onOpenChange(false);
+  const handleProfileSubmit = async (data: ProfileData) => {
+    try {
+      // Здесь должна быть логика сохранения профиля
+      console.log("Profile setup submitted:", data);
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Profile setup error:", error);
+    }
   };
 
-  const handleForgotPassword = () => {
-    console.log("Forgot password clicked");
-    // Handle forgot password flow
+  const handleForgotPassword = async () => {
+    try {
+      // Здесь должна быть логика восстановления пароля
+      console.log("Forgot password clicked");
+    } catch (error) {
+      console.error("Forgot password error:", error);
+    }
   };
 
   return (
@@ -56,8 +89,8 @@ const AuthModal = ({
             {activeTab === "login"
               ? "Вход"
               : activeTab === "register"
-                ? "Создать аккаунт"
-                : "Заполните профиль"}
+              ? "Создать аккаунт"
+              : "Заполните профиль"}
           </DialogTitle>
         </DialogHeader>
 
