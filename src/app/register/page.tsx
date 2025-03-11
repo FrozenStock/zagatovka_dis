@@ -76,10 +76,15 @@ export default function RegisterPage() {
           <div className="w-full max-w-md bg-background p-6 rounded-lg border border-border">
             <div className="p-3 mb-4 bg-green-500/15 border border-green-500 text-green-500 rounded-md">
               <h3 className="font-semibold mb-1">Регистрация успешна!</h3>
-              <p>Пожалуйста, проверьте вашу электронную почту для подтверждения аккаунта.</p>
+              <p>
+                Пожалуйста, проверьте вашу электронную почту для подтверждения
+                аккаунта.
+              </p>
             </div>
             <p className="mb-4 text-center text-muted-foreground">
-              Мы отправили письмо с ссылкой для подтверждения на указанный вами адрес. Пожалуйста, перейдите по ссылке в письме для активации вашего аккаунта.  
+              Мы отправили письмо с ссылкой для подтверждения на указанный вами
+              адрес. Пожалуйста, перейдите по ссылке в письме для активации
+              вашего аккаунта.
             </p>
             <Button className="w-full" onClick={() => router.push("/login")}>
               Перейти к странице входа
@@ -90,7 +95,7 @@ export default function RegisterPage() {
             onSubmit={handleRegister}
             onLoginClick={() => router.push("/login")}
           />
-        )
+        )}
 
         <div className="mt-6 text-center text-sm">
           Уже есть аккаунт?{" "}

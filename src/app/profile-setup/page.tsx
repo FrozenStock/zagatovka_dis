@@ -4,6 +4,15 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ProfileSetupForm from "@/components/auth/ProfileSetupForm";
 import { createClient } from "@/lib/supabase/client";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
 
 export default function ProfileSetupPage() {
   const router = useRouter();
@@ -30,13 +39,8 @@ export default function ProfileSetupPage() {
   const handleProfileSetup = async (data: {
     artistName: string;
     bio: string;
-    profileImage: File | null;
+    profileImageUrl: string | null;
     genre: string;
-    socialLinks: {
-      spotify: string;
-      instagram: string;
-      twitter: string;
-    };
   }) => {
     if (!userId) return;
 
@@ -46,61 +50,27 @@ export default function ProfileSetupPage() {
     try {
       const supabase = createClient();
 
-      // Upload profile image if provided
-      let profileImageUrl = null;
-      if (data.profileImage) {
-        const fileExt = data.profileImage.name.split(".").pop();
-        const fileName = `${userId}-${Date.now()}.${fileExt}`;
-
-        const { error: uploadError, data: uploadData } = await supabase.storage
-          .from("profile-images")
-          .upload(fileName, data.profileImage);
-
-        if (uploadError) throw uploadError;
-
-        if (uploadData) {
-          const { data: urlData } = supabase.storage
-            .from("profile-images")
-            .getPublicUrl(fileName);
-
-          profileImageUrl = urlData.publicUrl;
-        }
-      }
-
       // Update profile
       const { error: profileError } = await supabase
         .from("profiles")
         .update({
           artist_name: data.artistName,
-          bio: data.bio,
-          genre: data.genre,
-          profile_image_url: profileImageUrl,
+          bio: data.bio || null,
+          genre: data.genre || null,
+          profile_image_url: data.profileImageUrl,
           updated_at: new Date().toISOString(),
         })
         .eq("id", userId);
 
       if (profileError) throw profileError;
 
-      // Add social links
-      const socialLinks = [
-        { platform: "spotify", url: data.socialLinks.spotify },
-        { platform: "instagram", url: data.socialLinks.instagram },
-        { platform: "twitter", url: data.socialLinks.twitter },
-      ].filter((link) => link.url);
-
-      if (socialLinks.length > 0) {
-        const { error: linksError } = await supabase
-          .from("social_links")
-          .insert(
-            socialLinks.map((link) => ({
-              profile_id: userId,
-              platform: link.platform,
-              url: link.url,
-            })),
-          );
-
-        if (linksError) throw linksError;
-      }
+      // Add activity
+      await supabase.from("user_activity").insert({
+        user_id: userId,
+        activity_type: "profile-created",
+        title: "Профиль артиста создан",
+        activity_time: new Date().toISOString(),
+      });
 
       // Redirect to dashboard
       router.push("/dashboard");
@@ -116,12 +86,28 @@ export default function ProfileSetupPage() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         {error && (
-          <div className="mb-4 p-3 bg-destructive/15 border border-destructive text-destructive rounded-md text-sm">
-            {error}
-          </div>
+          <Alert variant="destructive" className="mb-6">
+            <AlertTitle>Ошибка</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
 
-        <ProfileSetupForm onSubmit={handleProfileSetup} isLoading={isLoading} />
+        <Card className="dark:bg-card/80 dark:backdrop-blur-sm">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">
+              Настройка профиля артиста
+            </CardTitle>
+            <CardDescription>
+              Заполните информацию о себе, чтобы начать использовать платформу
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ProfileSetupForm
+              onSubmit={handleProfileSetup}
+              isLoading={isLoading}
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

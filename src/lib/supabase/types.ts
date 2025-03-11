@@ -8,6 +8,61 @@ export interface Profile {
   updated_at: string;
 }
 
+export interface LicenseAgreement {
+  id: string;
+  user_id: string;
+  full_name: string;
+  address: string;
+  passport_number: string;
+  bank_details: string | null;
+  signature_url: string | null;
+  agreed_to_terms: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface DashboardStats {
+  id: string;
+  user_id: string;
+  total_streams: number;
+  stream_change: number;
+  total_revenue: number;
+  revenue_change: number;
+  total_audience: number;
+  audience_change: number;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface PlatformStats {
+  id: string;
+  user_id: string;
+  platform_name: string;
+  streams: number;
+  percentage: number;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface CountryStats {
+  id: string;
+  user_id: string;
+  country_name: string;
+  listeners: number;
+  percentage: number;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface TrackStats {
+  id: string;
+  user_id: string;
+  track_name: string;
+  streams: number;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
 export interface Release {
   id: string;
   artist_id: string;
@@ -17,10 +72,10 @@ export interface Release {
   cover_art_url: string | null;
   genre: string | null;
   description: string | null;
-  moderation_status: string;
-  distribution_status: string;
+  moderation_status: string | null;
+  distribution_status: string | null;
   upc: string | null;
-  release_type: string;
+  release_type: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -36,66 +91,11 @@ export interface Track {
   updated_at: string;
 }
 
-export interface DashboardStats {
-  id: string;
-  user_id: string;
-  total_streams: number;
-  stream_change: number;
-  total_revenue: number;
-  revenue_change: number;
-  total_audience: number;
-  audience_change: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PlatformStats {
-  id: string;
-  user_id: string;
-  platform_name: string;
-  streams: number;
-  percentage: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface CountryStats {
-  id: string;
-  user_id: string;
-  country_name: string;
-  listeners: number;
-  percentage: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface TrackStats {
-  id: string;
-  user_id: string;
-  track_name: string;
-  streams: number;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface UserActivity {
   id: string;
   user_id: string;
   activity_type: string;
   title: string;
-  activity_time: string;
-  created_at: string;
-}
-
-export interface LicenseAgreement {
-  id: string;
-  user_id: string;
-  full_name: string;
-  address: string;
-  passport_number: string;
-  bank_details: string | null;
-  signature_url: string | null;
-  agreed_to_terms: boolean;
-  created_at: string;
-  updated_at: string;
+  activity_time: string | null;
+  created_at: string | null;
 }

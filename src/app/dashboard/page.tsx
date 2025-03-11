@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import DashboardHome from "@/components/dashboard/DashboardHome";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { getSession, getProfile } from "@/lib/auth";
 import {
@@ -10,6 +9,7 @@ import {
   getUserActivities,
   initializeUserData,
 } from "@/lib/supabase/actions";
+import DashboardHome from "@/components/dashboard/DashboardHome";
 
 export default async function DashboardPage() {
   const session = await getSession();
