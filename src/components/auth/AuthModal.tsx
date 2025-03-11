@@ -14,38 +14,34 @@ interface AuthModalProps {
   showProfileSetup?: boolean;
 }
 
-const AuthModal = ({
+const AuthModal: React.FC<AuthModalProps> = ({
   open = true,
-  onOpenChange = () => {},
+  onOpenChange,
   defaultTab = "login",
   showProfileSetup = false,
-}: AuthModalProps) => {
-  const [activeTab, setActiveTab] = useState<string>(defaultTab);
+}) => {
+  const [activeTab, setActiveTab] = useState<"login" | "register" | "profile">(
+    defaultTab,
+  );
   const [showProfile, setShowProfile] = useState<boolean>(showProfileSetup);
 
-  const handleLoginSubmit = (data: any) => {
+  const handleLoginSubmit = (data: Record<string, unknown>) => {
     console.log("Login submitted:", data);
-    // Here you would typically handle authentication
-    // For demo purposes, we'll just log the data
   };
 
-  const handleRegisterSubmit = (data: any) => {
+  const handleRegisterSubmit = (data: Record<string, unknown>) => {
     console.log("Registration submitted:", data);
-    // After successful registration, show profile setup
     setShowProfile(true);
     setActiveTab("profile");
   };
 
-  const handleProfileSubmit = (data: any) => {
+  const handleProfileSubmit = (data: Record<string, unknown>) => {
     console.log("Profile setup submitted:", data);
-    // Here you would typically save the profile data
-    // and then close the modal or redirect
-    onOpenChange(false);
+    onOpenChange?.(false);
   };
 
   const handleForgotPassword = () => {
     console.log("Forgot password clicked");
-    // Handle forgot password flow
   };
 
   return (
@@ -64,7 +60,7 @@ const AuthModal = ({
         {!showProfile ? (
           <Tabs
             value={activeTab}
-            onValueChange={setActiveTab}
+            onValueChange={(val) => setActiveTab(val as "login" | "register")}
             className="w-full"
           >
             <div className="px-6">
