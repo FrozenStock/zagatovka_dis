@@ -22,5 +22,5 @@ export interface Track {
 
 export interface StreamingStat {
   platform: string;
-  stream_count: number;
+  count: number;
 }
