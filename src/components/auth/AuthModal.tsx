@@ -6,8 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import ProfileSetupForm from "./ProfileSetupForm";
-
-type TabType = "login" | "register" | "profile";
+import { LoginData, RegisterData, ProfileData, TabType } from "@/types/auth";
 
 interface AuthModalProps {
   open?: boolean;
@@ -59,7 +58,7 @@ const AuthModal = ({
   const handleForgotPassword = async () => {
     try {
       // Здесь должна быть логика восстановления пароля
-      console.log("Forgot password clicked");
+      console.log("Forgot password requested");
     } catch (error) {
       console.error("Forgot password error:", error);
     }

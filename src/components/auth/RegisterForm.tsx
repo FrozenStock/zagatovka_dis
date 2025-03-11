@@ -3,6 +3,7 @@
 import React from "react";
 import { useForm as useReactHookForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
+import { RegisterData } from "@/types/auth";
 
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -21,14 +22,6 @@ interface RegisterFormProps {
   onSubmit: (data: RegisterData) => Promise<void>;
   onLoginClick: () => void;
   isLoading?: boolean;
-}
-
-interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  acceptTerms: boolean;
 }
 
 export default function RegisterForm({

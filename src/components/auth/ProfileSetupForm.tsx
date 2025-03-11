@@ -19,9 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { ProfileData } from "@/types/auth";
 
 interface ProfileSetupFormProps {
-  onSubmit?: (data: ProfileFormData) => void;
+  onSubmit: (data: ProfileData) => Promise<void>;
   isLoading?: boolean;
 }
 

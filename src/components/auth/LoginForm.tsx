@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useForm as useReactHookForm } from "react-hook-form";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { LoginData } from "@/types/auth";
 
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -18,14 +19,8 @@ import {
 } from "../ui/form";
 
 interface LoginFormProps {
-  onSubmit?: (data: LoginFormValues) => void;
-  onForgotPassword?: () => void;
-}
-
-interface LoginFormValues {
-  email: string;
-  password: string;
-  rememberMe: boolean;
+  onSubmit: (data: LoginData) => Promise<void>;
+  onForgotPassword: () => void;
 }
 
 const LoginForm = ({
